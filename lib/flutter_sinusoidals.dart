@@ -2,13 +2,11 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:math' as math;
 
-import 'package:flutter/widgets.dart';
-
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 enum WaveFormular {
   normal,
@@ -28,8 +26,8 @@ typedef SinusoidalItemBuilder = SinusoidalItem Function(
 class SinusoidalItem {
   const SinusoidalItem({
     this.model = const SinusoidalModel(),
-    @required this.child,
-  }) : assert(child != null);
+    required this.child,
+  });
 
   /// A given child at which will be clipped from to create a sinusoidal.
   final Widget child;
@@ -166,19 +164,13 @@ class SinusoidalModel extends Equatable {
 ///
 class Sinusoidals extends _BaseWaveWidget {
   const Sinusoidals({
-    Key key,
-    @required this.itemCount,
-    @required this.builder,
-    int period,
-    bool reverse,
+    super.key,
+    required this.itemCount,
+    required this.builder,
+    super.period,
+    super.reverse = false,
     this.alignment = AlignmentDirectional.topStart,
-  })  : assert(itemCount != null),
-        assert(builder != null),
-        super(
-          key: key,
-          period: period,
-          reverse: reverse ?? false,
-        );
+  });
 
   /// Called to build children for this widget.
   final SinusoidalItemBuilder builder;
@@ -247,17 +239,12 @@ class _SinusoidalsState extends _BaseWaveWidgetState<Sinusoidals> {
 ///
 class Sinusoidal extends _BaseWaveWidget {
   const Sinusoidal({
-    Key key,
+    super.key,
     this.model = const SinusoidalModel(),
-    int period,
-    bool reverse,
-    @required this.child,
-  })  : assert(child != null),
-        super(
-          key: key,
-          period: period,
-          reverse: reverse ?? false,
-        );
+    super.period,
+    super.reverse = false,
+    required this.child,
+  });
 
   /// A given child at which will be  from to create a sinusoidal.
   final Widget child;
@@ -267,6 +254,11 @@ class Sinusoidal extends _BaseWaveWidget {
 
   @override
   _SinusoidalState createState() => _SinusoidalState();
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<SinusoidalModel>('model', model));
+  }
 }
 
 class _SinusoidalState extends _BaseWaveWidgetState<Sinusoidal> {
@@ -323,17 +315,12 @@ class _SinusoidalState extends _BaseWaveWidgetState<Sinusoidal> {
 ///
 class CombinedWave extends _BaseWaveWidget {
   const CombinedWave({
-    Key key,
-    @required this.models,
-    int period,
-    bool reverse,
-    @required this.child,
-  })  : assert(child != null),
-        super(
-          key: key,
-          period: period,
-          reverse: reverse ?? false,
-        );
+    super.key,
+    required this.models,
+    super.period,
+    super.reverse = false,
+    required this.child,
+  });
 
   /// A given child at which will be  from to create a wave.
   final Widget child;
@@ -343,6 +330,11 @@ class CombinedWave extends _BaseWaveWidget {
 
   @override
   _CombinedWaveState createState() => _CombinedWaveState();
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<SinusoidalModel>('models', models));
+  }
 }
 
 class _CombinedWaveState extends _BaseWaveWidgetState<CombinedWave> {
@@ -364,16 +356,11 @@ class _CombinedWaveState extends _BaseWaveWidgetState<CombinedWave> {
 /// [child]'s height need to be at least 100 to work.
 class MagmaWave extends _BaseWaveWidget {
   const MagmaWave({
-    Key key,
-    int period,
-    bool reverse,
-    @required this.child,
-  })  : assert(child != null),
-        super(
-          key: key,
-          period: period,
-          reverse: reverse ?? false,
-        );
+    super.key,
+    super.period,
+    super.reverse,
+    required this.child,
+  });
 
   /// A given child at which will be  from to create a wave.
   final Widget child;
@@ -397,13 +384,13 @@ class _MagmaWaveState extends _BaseWaveWidgetState<MagmaWave> {
 
 abstract class _BaseWaveWidget extends StatefulWidget {
   const _BaseWaveWidget({
-    Key key,
+    super.key,
     this.period,
-    this.reverse,
-  }) : super(key: key);
+    this.reverse = false,
+  });
 
   /// The period (measured in milliseconds) to complete a full revolution.
-  final int period;
+  final int? period;
 
   /// If `reverse = true`, then clipping from bottom to top.
   ///
@@ -413,7 +400,7 @@ abstract class _BaseWaveWidget extends StatefulWidget {
 
 abstract class _BaseWaveWidgetState<T extends _BaseWaveWidget> extends State<T>
     with SingleTickerProviderStateMixin<T> {
-  AnimationController _timeController;
+  late final AnimationController _timeController;
 
   @override
   void initState() {
@@ -422,9 +409,11 @@ abstract class _BaseWaveWidgetState<T extends _BaseWaveWidget> extends State<T>
       vsync: this,
       upperBound: 2 * _tau,
       animationBehavior: AnimationBehavior.preserve,
-      duration: Duration(milliseconds: widget.period ?? 5000),
+      duration: widget.period == null
+          ? Duration.zero
+          : Duration(milliseconds: widget.period!),
     );
-    _timeController.repeat();
+    if (widget.period != null) _timeController.repeat();
   }
 
   @override
@@ -436,9 +425,9 @@ abstract class _BaseWaveWidgetState<T extends _BaseWaveWidget> extends State<T>
 
 class _SinusoidalClipper extends CustomClipper<Path> {
   _SinusoidalClipper({
-    this.time,
-    this.model,
-    this.reverse,
+    required this.time,
+    required this.model,
+    required this.reverse,
   }) : super(reclip: time);
 
   static final List<Offset> offsets = <Offset>[];
@@ -473,9 +462,9 @@ class _SinusoidalClipper extends CustomClipper<Path> {
 
 class _CombinedWaveClipper extends CustomClipper<Path> {
   _CombinedWaveClipper({
-    this.time,
-    this.models,
-    this.reverse,
+    required this.time,
+    required this.models,
+    required this.reverse,
   }) : super(reclip: time);
 
   static final List<Offset> offsets = <Offset>[];
@@ -514,8 +503,8 @@ class _CombinedWaveClipper extends CustomClipper<Path> {
 
 class _MagmaWaveClipper extends CustomClipper<Path> {
   _MagmaWaveClipper({
-    this.time,
-    this.reverse,
+    required this.time,
+    required this.reverse,
   }) : super(reclip: time);
 
   static final List<Offset> offsets = <Offset>[];

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_sinusoidals/flutter_sinusoidals.dart';
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ const _colors = [
 ];
 
 class _SinusoidalsDemo extends StatelessWidget {
-  const _SinusoidalsDemo({Key key}) : super(key: key);
+  const _SinusoidalsDemo();
 
   static const _amplitude = 45.0;
   static const _waves = 3.0;
@@ -85,7 +84,7 @@ class _SinusoidalsDemo extends StatelessWidget {
 }
 
 class _SinusoidalDemo extends StatelessWidget {
-  const _SinusoidalDemo({Key key}) : super(key: key);
+  const _SinusoidalDemo();
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +148,7 @@ class _SinusoidalDemo extends StatelessWidget {
 }
 
 class _CombinedWaveDemo extends StatelessWidget {
-  const _CombinedWaveDemo({Key key}) : super(key: key);
+  const _CombinedWaveDemo();
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +204,7 @@ class _CombinedWaveDemo extends StatelessWidget {
 }
 
 class _MagmaWaveDemo extends StatelessWidget {
-  const _MagmaWaveDemo({Key key}) : super(key: key);
+  const _MagmaWaveDemo();
 
   @override
   Widget build(BuildContext context) {
